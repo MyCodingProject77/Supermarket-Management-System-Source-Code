@@ -1,0 +1,182 @@
+
+
+ using MySql.Data.MySqlClient;
+
+
+ Database Connection Code
+
+ internal class DatabaseConnection
+{
+    private MySqlConnection connection;
+
+    public DatabaseConnection()
+    {
+        string connectionString = "Server=127.0.0.1;Database=MarketDB;Uid=root;Pwd=Vxymai54786666@;";
+        connection = new MySqlConnection(connectionString);
+    }
+    
+    public MySqlConnection GetConnection()
+    {
+        return connection;
+    }
+}
+
+
+
+
+
+   Insert Code
+
+
+   int productid = int.Parse(textBox1.Text);
+string name = textBox2.Text;
+int price = int.Parse(textBox3.Text);
+int quantity = int.Parse(textBox4.Text);
+
+string query = "INSERT INTO products (ProductID, Name, Price, Quantity) VALUES (@ProductID, @Name, @Price, @Quantity)";
+using (MySqlConnection conn = new DatabaseConnection().GetConnection())
+{
+    conn.Open();
+    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+    {
+        cmd.Parameters.AddWithValue("@ProductID", productid);
+        cmd.Parameters.AddWithValue("@Name", name);
+        cmd.Parameters.AddWithValue("@Price", price);
+        cmd.Parameters.AddWithValue("@Quantity", quantity);
+        cmd.ExecuteNonQuery();
+    }
+}
+MessageBox.Show("Record Inserted Successfully");
+ProductLoad();
+
+
+
+
+  ProductLoad Code
+
+  string query = "SELECT * FROM products";
+
+using (MySqlConnection conn = new DatabaseConnection().GetConnection())
+{
+    conn.Open();
+    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+    {
+        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+        {
+            DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            dataGridView1.DataSource = dataTable;
+        }
+    }
+
+}
+
+
+
+
+  Update Code
+
+
+   int productid = int.Parse(textBox1.Text);
+string name = textBox2.Text;
+int price = int.Parse(textBox3.Text);
+int quantity = int.Parse(textBox4.Text);
+
+string query = "UPDATE products SET Name=@Name, Price=@Price, Quantity=@Quantity WHERE ProductID=@ProductID";
+using (MySqlConnection conn = new DatabaseConnection().GetConnection())
+{
+    conn.Open();
+    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+    {
+        cmd.Parameters.AddWithValue("@ProductID", productid);
+        cmd.Parameters.AddWithValue("@Name", name);
+        cmd.Parameters.AddWithValue("@Price", price);
+        cmd.Parameters.AddWithValue("@Quantity", quantity);
+        cmd.ExecuteNonQuery();
+    }
+}
+MessageBox.Show("Record Updated Successfully");
+ProductLoad();
+
+
+
+
+  Delete Code
+
+
+   int productid = int.Parse(textBox1.Text);
+
+
+string query = "DELETE FROM products WHERE ProductID=@ProductID";
+using (MySqlConnection conn = new DatabaseConnection().GetConnection())
+{
+    conn.Open();
+    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+    {
+        cmd.Parameters.AddWithValue("@ProductID", productid);
+        cmd.ExecuteNonQuery();
+    }
+}
+MessageBox.Show("Record Deleted Successfully");
+ProductLoad();
+
+
+
+
+       Query
+
+        CREATE DATABASE MarketDB;
+
+USE MarketDB;
+
+CREATE TABLE products(
+ProductID INT NOT NULL,
+Name VARCHAR(50) NOT NULL,
+Price INT,
+Quantity INT,
+PRIMARY KEY (ProductID)
+
+
+);
+
+CREATE TABLE customers(
+CustomerID INT NOT NULL,
+CustomerName VARCHAR(50) NOT NULL,
+Email VARCHAR(50),
+Address VARCHAR(50),
+PRIMARY KEY (CustomerID)
+
+
+);
+
+
+CREATE TABLE orders(
+OrderID INT NOT NULL,
+ProductNo VARCHAR(50) NOT NULL,
+Product VARCHAR(50),
+Quantity INT,
+OrderDate DATE,
+PRIMARY KEY (OrderID)
+
+
+);
+
+
+CREATE TABLE suppliers(
+SID INT NOT NULL,
+Name VARCHAR(50) NOT NULL,
+Contact VARCHAR(50),
+PRIMARY KEY (SID)
+
+
+);
+
+CREATE TABLE payments(
+PID INT NOT NULL,
+ProductNo VARCHAR(50) NOT NULL,
+PaymentMethod VARCHAR(50),
+Amount INT,
+PRIMARY KEY (PID)
+
+
+);
